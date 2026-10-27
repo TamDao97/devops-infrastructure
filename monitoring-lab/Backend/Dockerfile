@@ -2,18 +2,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# 1. Copy file cấu hình project trước
+# 1. Chỉ copy file csproj trước để tận dụng cache restore
 COPY ["Backend.csproj", "./"]
 RUN dotnet restore "Backend.csproj"
 
-# 2. Thay vì dùng 'COPY . .', hãy copy tường minh các thư mục mã nguồn C# thực tế của bạn
-COPY Controllers/ ./Controllers/
-COPY Models/ ./Models/
-COPY Services/ ./Services/
-COPY Program.cs ./
-COPY appsettings.json ./
-
-# 3. Tiến hành publish
+# 2. Sau đó mới copy toàn bộ mã nguồn còn lại
+COPY . .
 RUN dotnet publish "Backend.csproj" -c Release -o /app/publish
 
 # --- Stage 2: Run ---
