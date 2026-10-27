@@ -12,6 +12,8 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
+    extra_hosts: # <--- Thêm đoạn này vào
+      - "host.docker.internal:host-gateway" # <--- để Prometheus gọi ra máy host
     depends_on:
       - cadvisor
     networks:

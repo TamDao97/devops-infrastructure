@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  backend:
+    build: ./Backend
+    container_name: dotnet_backend_app
+    ports:
+      - "5000:8080" # Hoặc cổng tương ứng của .NET app bên trong container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - app-network
+
+  # (Tùy chọn) Thêm service Traffic Generator chạy ngầm trong compose
+  traffic-gen:
+    build: ./traffic-generator
+    container_name: traffic_generator_app
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
