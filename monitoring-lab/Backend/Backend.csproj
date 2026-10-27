@@ -7,12 +7,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include=".dockerignore" />
-		<Compile Include="Dockerfile" />
+		<!-- Loại bỏ file Docker và file ignore khỏi quá trình biên dịch C# -->
+		<Compile Remove="Dockerfile" />
+		<Compile Remove=".dockerignore" />
+		<None Include="Dockerfile" />
+		<None Include=".dockerignore" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
 		<PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
 	</ItemGroup>
 
