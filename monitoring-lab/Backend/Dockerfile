@@ -2,11 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Chỉ copy file csproj của project Web API (thay 'Backend.csproj' bằng tên file csproj thực tế của bạn)
+# 1. Chỉ copy file csproj trước để tận dụng cache restore
 COPY ["Backend.csproj", "./"]
 RUN dotnet restore "Backend.csproj"
 
-# Copy toàn bộ source code còn lại
+# 2. Sau đó mới copy toàn bộ mã nguồn còn lại
 COPY . .
 RUN dotnet publish "Backend.csproj" -c Release -o /app/publish
 
