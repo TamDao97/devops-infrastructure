@@ -1,7 +1,3 @@
 ﻿.vs
 bin
 obj
-Dockerfile
-.dockerignore
-*.sln
-*.slnx
