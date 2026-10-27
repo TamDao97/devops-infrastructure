@@ -1,3 +1,5 @@
+using Prometheus;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,6 +34,10 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+// Thêm dòng này để bật endpoint /metrics tự động
+app.UseMetricServer();
+app.MapMetrics();
 
 app.Run();
 
