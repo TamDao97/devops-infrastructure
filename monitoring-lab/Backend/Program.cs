@@ -1,6 +1,13 @@
 using Prometheus;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Cấu hình Serilog từ appsettings.json
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext());
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -15,6 +22,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Đảm bảo có Middleware bắt Exception để log tự động
+app.UseSerilogRequestLogging();
 
 // 1. Thu thập HTTP Request Metrics tự động (Rate, Duration, Status Code)
 app.UseHttpMetrics();
