@@ -16,32 +16,30 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// 1. Thu thập HTTP Request Metrics tự động (Rate, Duration, Status Code)
+app.UseHttpMetrics();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.UseRouting();
 
-// Thêm dòng này để bật endpoint /metrics tự động
-app.UseMetricServer();
+// 2. Public endpoint metrics để Prometheus cào dữ liệu
 app.MapMetrics();
 
-app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+// 3. Endpoint giả lập lỗi HTTP 500 (Dùng để test Error Rate trên Dashboard RED)
+app.MapGet("/simulate-error", () =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    // Cố tình gây ra NullReferenceException để ứng dụng trả về HTTP 500 Internal Server Error
+    string? text = null;
+    int length = text.Length;
+
+    return Results.Ok(new { message = "Success" });
+});
+
+// 4. Endpoint mẫu bình thường (HTTP 200) để test Rate & Latency
+app.MapGet("/normal-api", async () =>
+{
+    // Giả lập độ trễ xử lý (Latency) nhẹ khoảng 100ms
+    await Task.Delay(100);
+    return Results.Ok(new { message = "Everything is running smoothly!" });
+});
+
+app.Run();
