@@ -12,8 +12,8 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
-    extra_hosts: # <--- Thêm đoạn này vào
-      - "host.docker.internal:host-gateway" # <--- để Prometheus gọi ra máy host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - cadvisor
     networks:
@@ -50,9 +50,25 @@ services:
     networks:
       - monitoring
 
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: promtail_agent
+    volumes:
+      - ./promtail/promtail-config.yml:/etc/promtail/promtail-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    networks:
+      - monitoring
+      - tripstep-prod-net
+    restart: unless-stopped
+
 networks:
   monitoring:
     name: devopslab-monitoring
+  tripstep-prod-net:
+    name: tripstep-prod
+    external: true
 
 volumes:
   prometheus_data:
