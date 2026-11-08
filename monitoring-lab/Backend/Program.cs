@@ -35,11 +35,18 @@ app.UseRouting();
 app.MapMetrics();
 
 // 3. Endpoint giả lập lỗi HTTP 500 (Dùng để test Error Rate trên Dashboard RED)
-app.MapGet("/simulate-error", () =>
+app.MapGet("/simulate-error", (ILogger<Program> logger) =>
 {
-    // Cố tình gây ra NullReferenceException để ứng dụng trả về HTTP 500 Internal Server Error
-    string? text = null;
-    int length = text.Length;
+    try
+    {
+        string? text = null;
+        int length = text.Length;
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Lỗi giả lập được kích hoạt tại /simulate-error");
+        throw; // Hoặc trả về Results.StatusCode(500)
+    }
 
     return Results.Ok(new { message = "Success" });
 });
